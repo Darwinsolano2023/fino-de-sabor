@@ -28,9 +28,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->colors([
-                'primary' => Color::Amber,
-            ])
+            ->brandName('Fino de Sabor')
+            ->colors(['primary' => Color::Orange])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

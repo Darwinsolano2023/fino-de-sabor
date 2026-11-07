@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
-class Usuario extends Authenticatable
+class Usuario extends Authenticatable implements FilamentUser, HasName
 {
     use HasApiTokens, HasUuids, SoftDeletes;
 
@@ -35,6 +38,20 @@ class Usuario extends Authenticatable
     public function rol(): BelongsTo
     {
         return $this->belongsTo(Rol::class, 'rol_id');
+    }
+
+    /** Filament: quien puede entrar al panel de administracion. Los vendedores no. */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->activo
+            && $this->rol?->activo
+            && in_array($this->rol->codigo, ['administrador', 'facturador'], true);
+    }
+
+    /** Filament: nombre que se muestra (nuestra columna es "nombre", no "name"). */
+    public function getFilamentName(): string
+    {
+        return $this->nombre;
     }
 
     /** Lista de codigos de permiso, ej: ['pedidos.ver', 'pedidos.crear'] */
